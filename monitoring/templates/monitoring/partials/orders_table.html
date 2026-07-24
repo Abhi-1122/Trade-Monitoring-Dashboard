@@ -1,0 +1,78 @@
+{% load monitoring_extras %}
+<form id="orders-filter-form"
+      hx-get="{% url 'orders-table' %}"
+      hx-trigger="change, every 5s"
+      hx-target="#orders-table-wrapper"
+      hx-swap="innerHTML"
+      class="filter-form">
+  <input type="hidden" name="sort" value="{{ current_sort }}">
+
+  <label>
+    Desk
+    <select name="desk">
+      <option value="">All</option>
+      {% for desk in desks %}
+        <option value="{{ desk }}" {% if desk == selected_desk %}selected{% endif %}>{{ desk }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>
+    Status
+    <select name="status">
+      <option value="">All</option>
+      {% for value, label in statuses %}
+        <option value="{{ value }}" {% if value == selected_status %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>
+    Symbol
+    <select name="symbol">
+      <option value="">All</option>
+      {% for symbol in symbols %}
+        <option value="{{ symbol }}" {% if symbol == selected_symbol %}selected{% endif %}>{{ symbol }}</option>
+      {% endfor %}
+    </select>
+  </label>
+</form>
+
+<table class="orders-table">
+  <thead>
+    <tr>
+      {% sort_header "symbol" "Symbol" current_sort %}
+      <th>Side</th>
+      {% sort_header "quantity" "Qty" current_sort %}
+      {% sort_header "status" "Status" current_sort %}
+      {% sort_header "desk" "Desk" current_sort %}
+      <th>Trader</th>
+      {% sort_header "latency_ms" "Latency" current_sort %}
+      {% sort_header "created_at" "Created" current_sort %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    <tr>
+      <td class="mono">{{ order.symbol }}</td>
+      <td class="side side-{{ order.side|lower }}">{{ order.side }}</td>
+      <td class="mono">{{ order.quantity }}</td>
+      <td><span class="badge badge-{{ order.status|lower }}">{{ order.get_status_display }}</span></td>
+      <td>{{ order.desk }}</td>
+      <td>{{ order.trader.name }}</td>
+      <td class="mono">
+        {% if order.latency_ms %}
+          <span class="{% if order.latency_ms > 5000 %}latency-high{% elif order.latency_ms > 2000 %}latency-medium{% endif %}">
+            {{ order.latency_ms }}ms
+          </span>
+        {% else %}
+          &mdash;
+        {% endif %}
+      </td>
+      <td class="mono timestamp">{{ order.created_at|date:"H:i:s" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="8" class="empty-row">No orders match these filters.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

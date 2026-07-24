@@ -1,0 +1,29 @@
+{% extends "monitoring/base.html" %}
+
+{% block content %}
+<header class="topbar">
+  <div class="topbar-title">
+    <h1>Trade Monitoring Dashboard</h1>
+    <span class="live-indicator"><span class="live-dot"></span> Live</span>
+  </div>
+  <div class="topbar-stats">
+    <div class="stat">
+      <span class="stat-value mono">{{ open_orders_count }}</span>
+      <span class="stat-label">Open Orders</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value mono">{{ flags_today_count }}</span>
+      <span class="stat-label">Flags Today</span>
+    </div>
+  </div>
+</header>
+
+<main class="dashboard-main">
+  <section class="panel orders-section">
+    <h2>Orders</h2>
+    <div id="orders-table-wrapper">
+      {% include "monitoring/partials/orders_table.html" %}
+    </div>
+  </section>
+</main>
+{% endblock %}
