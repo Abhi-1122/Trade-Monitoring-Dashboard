@@ -3,36 +3,52 @@
 {% block content %}
 <header class="topbar">
   <div class="topbar-title">
-    <h1>Trade Monitoring Dashboard</h1>
-    <span class="live-indicator"><span class="live-dot"></span> Live</span>
+    <span class="brand-mark"></span>
+    <div>
+      <h1>Trade Monitoring</h1>
+      <span class="live-indicator"><span class="live-dot"></span> Live feed</span>
+    </div>
   </div>
   <div class="topbar-stats">
     <div class="stat">
-      <span class="stat-value mono">{{ open_orders_count }}</span>
-      <span class="stat-label">Open Orders</span>
+      <span class="stat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+      </span>
+      <div class="stat-text">
+        <span class="stat-value mono">{{ open_orders_count }}</span>
+        <span class="stat-label">Open Orders</span>
+      </div>
     </div>
     <div class="stat">
-      <span class="stat-value mono">{{ flags_today_count }}</span>
-      <span class="stat-label">Flags Today</span>
+      <span class="stat-icon stat-icon-flag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4c0-.55.45-1 1-1h11.5a.5.5 0 0 1 .4.8l-3 4 3 4a.5.5 0 0 1-.4.8H6"/></svg>
+      </span>
+      <div class="stat-text">
+        <span class="stat-value mono">{{ flags_today_count }}</span>
+        <span class="stat-label">Flags Today</span>
+      </div>
     </div>
   </div>
 </header>
 
 <main class="dashboard-main">
-  <div id="desk-summary-wrapper">
-    {% include "monitoring/partials/desk_summary.html" %}
-  </div>
+  <section class="panel desk-section">
+    <h2><svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg> Desk Activity</h2>
+    <div id="desk-summary-wrapper">
+      {% include "monitoring/partials/desk_summary.html" %}
+    </div>
+  </section>
 
   <div class="dashboard-columns">
     <section class="panel flags-section">
-      <h2>Anomaly Flags</h2>
+      <h2><svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a1.8 1.8 0 0 0 1.5 2.7h17.4a1.8 1.8 0 0 0 1.5-2.7L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z"/></svg> Anomaly Flags</h2>
       <div id="flags-panel-wrapper">
         {% include "monitoring/partials/flags_panel.html" %}
       </div>
     </section>
 
     <section class="panel orders-section">
-      <h2>Orders</h2>
+      <h2><svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg> Orders</h2>
       <div id="orders-table-wrapper">
         {% include "monitoring/partials/orders_table.html" %}
       </div>
@@ -40,7 +56,7 @@
   </div>
 
   <section class="panel chart-section">
-    <h2>Ack Latency &mdash; last 50 orders</h2>
+    <h2><svg class="h-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15l4-5 3 3 5-7"/></svg> Ack Latency &mdash; last 50 orders</h2>
     <canvas id="latency-chart" height="90"></canvas>
   </section>
 </main>

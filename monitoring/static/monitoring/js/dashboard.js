@@ -4,6 +4,11 @@
 
 let latencyChart = null;
 
+const ACCENT = "#2dd7b5";
+const RED = "#fb5a7e";
+const TEXT_DIM = "#8991a8";
+const GRID = "rgba(255, 255, 255, 0.06)";
+
 async function fetchLatencySeries() {
   const res = await fetch("/api/latency-series/?limit=50");
   return res.json();
@@ -17,12 +22,20 @@ function toLabels(points) {
   return points.map((p) => new Date(p.created_at).toLocaleTimeString());
 }
 
+function accentGradient(ctx) {
+  const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+  gradient.addColorStop(0, "rgba(45, 215, 181, 0.35)");
+  gradient.addColorStop(1, "rgba(45, 215, 181, 0)");
+  return gradient;
+}
+
 async function initLatencyChart() {
   const canvas = document.getElementById("latency-chart");
   if (!canvas || typeof Chart === "undefined") return;
 
   const data = await fetchLatencySeries();
   const latencyValues = data.points.map((p) => p.latency_ms);
+  const ctx = canvas.getContext("2d");
 
   latencyChart = new Chart(canvas, {
     type: "line",
@@ -32,17 +45,20 @@ async function initLatencyChart() {
         {
           label: "Ack latency (ms)",
           data: latencyValues,
-          borderColor: "#58a6ff",
-          backgroundColor: "rgba(88, 166, 255, 0.12)",
-          tension: 0.25,
-          pointRadius: 2,
+          borderColor: ACCENT,
+          backgroundColor: accentGradient(ctx),
+          tension: 0.35,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBackgroundColor: ACCENT,
+          borderWidth: 2,
           fill: true,
         },
         {
           label: `Threshold (${data.threshold_ms}ms)`,
           data: thresholdLine(latencyValues.length, data.threshold_ms),
-          borderColor: "#f85149",
-          borderDash: [6, 4],
+          borderColor: RED,
+          borderDash: [6, 5],
           borderWidth: 1,
           pointRadius: 0,
         },
@@ -51,12 +67,39 @@ async function initLatencyChart() {
     options: {
       responsive: true,
       animation: false,
+      interaction: { intersect: false, mode: "index" },
       scales: {
-        x: { ticks: { color: "#7d8896" }, grid: { color: "#232a37" } },
-        y: { ticks: { color: "#7d8896" }, grid: { color: "#232a37" }, beginAtZero: true },
+        x: {
+          ticks: { color: TEXT_DIM, font: { family: "'JetBrains Mono', monospace", size: 10 } },
+          grid: { color: GRID, drawTicks: false },
+          border: { color: GRID },
+        },
+        y: {
+          ticks: { color: TEXT_DIM, font: { family: "'JetBrains Mono', monospace", size: 10 } },
+          grid: { color: GRID, drawTicks: false },
+          border: { display: false },
+          beginAtZero: true,
+        },
       },
       plugins: {
-        legend: { labels: { color: "#d7dde5" } },
+        legend: {
+          labels: {
+            color: "#edf0f8",
+            font: { family: "'Inter', sans-serif", size: 12 },
+            usePointStyle: true,
+            pointStyle: "circle",
+            boxWidth: 8,
+          },
+        },
+        tooltip: {
+          backgroundColor: "#12141f",
+          borderColor: "rgba(255,255,255,0.1)",
+          borderWidth: 1,
+          titleFont: { family: "'JetBrains Mono', monospace", size: 11 },
+          bodyFont: { family: "'JetBrains Mono', monospace", size: 12 },
+          padding: 10,
+          cornerRadius: 8,
+        },
       },
     },
   });
