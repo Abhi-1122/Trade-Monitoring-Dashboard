@@ -9,8 +9,7 @@ There's no real broker or market data behind it; a background process
 generates a continuous, realistic-looking synthetic order stream so the
 dashboard always has something live to show.
 
-> **Screenshot:** _add one here after your first local run — `/dashboard/`
-> with the feed generator running for a minute or two looks best._
+![Trade Monitoring Dashboard screenshot](docs/screenshot.png)
 
 ## Features
 
