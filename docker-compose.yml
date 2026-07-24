@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-trade_monitor}
+      POSTGRES_USER: ${DB_USER:-trade_monitor}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-trade_monitor}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-trade_monitor}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py seed_data &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+    env_file: .env
+    environment:
+      DB_ENGINE: postgres
+      DB_HOST: db
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_volume:/app/staticfiles
+    depends_on:
+      db:
+        condition: service_healthy
+
+  feed-generator:
+    build: .
+    command: python manage.py generate_feed --inject-reject-burst
+    env_file: .env
+    environment:
+      DB_ENGINE: postgres
+      DB_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+      web:
+        condition: service_started
+    restart: unless-stopped
+
+  detector:
+    build: .
+    command: python manage.py detect_anomalies --loop --interval 10
+    env_file: .env
+    environment:
+      DB_ENGINE: postgres
+      DB_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+      web:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  static_volume:
