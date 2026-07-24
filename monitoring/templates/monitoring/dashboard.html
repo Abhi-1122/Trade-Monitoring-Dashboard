@@ -19,11 +19,29 @@
 </header>
 
 <main class="dashboard-main">
-  <section class="panel orders-section">
-    <h2>Orders</h2>
-    <div id="orders-table-wrapper">
-      {% include "monitoring/partials/orders_table.html" %}
-    </div>
+  <div id="desk-summary-wrapper">
+    {% include "monitoring/partials/desk_summary.html" %}
+  </div>
+
+  <div class="dashboard-columns">
+    <section class="panel flags-section">
+      <h2>Anomaly Flags</h2>
+      <div id="flags-panel-wrapper">
+        {% include "monitoring/partials/flags_panel.html" %}
+      </div>
+    </section>
+
+    <section class="panel orders-section">
+      <h2>Orders</h2>
+      <div id="orders-table-wrapper">
+        {% include "monitoring/partials/orders_table.html" %}
+      </div>
+    </section>
+  </div>
+
+  <section class="panel chart-section">
+    <h2>Ack Latency &mdash; last 50 orders</h2>
+    <canvas id="latency-chart" height="90"></canvas>
   </section>
 </main>
 {% endblock %}

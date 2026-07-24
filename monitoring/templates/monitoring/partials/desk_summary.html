@@ -1,0 +1,24 @@
+<div class="desk-summary-strip"
+     hx-get="{% url 'dashboard-desk-summary' %}"
+     hx-trigger="every 5s"
+     hx-target="#desk-summary-wrapper"
+     hx-swap="innerHTML">
+  {% for row in desk_rows %}
+  <div class="desk-card">
+    <div class="desk-name">{{ row.desk }}</div>
+    <div class="desk-metrics">
+      <span class="mono">{{ row.order_count }}</span> orders &middot;
+      <span class="mono">{{ row.reject_count }}</span> rejects
+    </div>
+    <div class="reject-bar-track">
+      <div
+        class="reject-bar-fill{% if row.reject_rate_pct > 20 %} reject-high{% elif row.reject_rate_pct > 10 %} reject-medium{% endif %}"
+        style="width: {{ row.reject_rate_pct }}%"
+      ></div>
+    </div>
+    <div class="reject-rate mono">{{ row.reject_rate_pct }}% reject rate</div>
+  </div>
+  {% empty %}
+  <div class="empty-row">No desk activity yet.</div>
+  {% endfor %}
+</div>

@@ -1,0 +1,33 @@
+<div class="flags-panel-list"
+     hx-get="{% url 'dashboard-flags-panel' %}"
+     hx-trigger="every 5s"
+     hx-target="#flags-panel-wrapper"
+     hx-swap="innerHTML">
+  {% for flag in flags %}
+  <div class="flag-item severity-{{ flag.severity|lower }}">
+    <div class="flag-header">
+      <span class="flag-type">{{ flag.get_flag_type_display }}</span>
+      <span class="severity-badge severity-{{ flag.severity|lower }}">{{ flag.severity }}</span>
+    </div>
+    <div class="flag-detail">{{ flag.detail }}</div>
+    <div class="flag-footer">
+      <span class="timestamp mono">{{ flag.created_at|date:"H:i:s" }}</span>
+      {% if can_acknowledge %}
+      <button
+        type="button"
+        class="ack-btn"
+        hx-post="{% url 'flag-acknowledge' flag.id %}"
+        hx-swap="none"
+        hx-on::after-request="if(event.detail.successful) this.closest('.flag-item').remove()"
+      >
+        Acknowledge
+      </button>
+      {% else %}
+      <a class="ack-login-link" href="/admin/login/?next=/dashboard/">Log in to acknowledge</a>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="empty-row">No active flags. All clear.</div>
+  {% endfor %}
+</div>
